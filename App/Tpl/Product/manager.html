@@ -1,0 +1,191 @@
+<include file="Public:header" />
+<link href="__PUBLIC__/css/litebox.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="__PUBLIC__/css/base.css" type="text/css" />
+<script src="__PUBLIC__/js/PCASClass.js" type="text/javascript"></script>
+<div class="container">
+    <div class="page-header" style="border:none; font-size:14px;">
+        <ul class="nav nav-tabs">
+            <li class=""><a  href="{:U('product/index')}"><img src="__PUBLIC__/img/caigou.png"/>&nbsp;服务</a></li>
+            <li class=""><a href="{:U('product/analytics')}"><img src="__PUBLIC__/img/tongji.png"/> &nbsp;统计</a></li>
+            <li class="active"><a href="{:U('product/manager')}"><img src="__PUBLIC__/img/tongji.png"/> &nbsp;管家券</a></li>
+        </ul>
+
+        <if condition="$Think.session.position_id eq '14' OR $Think.session.position_id eq '15' OR $Think.session.position_id eq '16'">
+            <input type="hidden" id="userid" userId="<?php echo getuserid();?>" />
+            <elseif condition="$Think.session.position_id eq '17' OR $Think.session.position_id eq '19'"/>
+            <input type="hidden" id="userid" userId="<?php echo $_SESSION['user_id']?>" />
+            <else />
+            <input type="hidden" id="userid" userId="<?php echo $_SESSION['parent_id']?>" />
+        </if>
+
+        <input type="hidden" id="view" view="{:U('Product/viewservice?sid=')}"/>
+        <input type="hidden" id="edit" edit="{:U('Product/editservice?sid=')}">
+        <input type="hidden" class="position" position="{$position}">
+    </div>
+    <div class="row">
+        <div class="span2 knowledgecate">
+            <if condition="$Think.session.position_id eq '14' OR $Think.session.position_id eq '15' ">
+                <ul class="nav nav-list" id="prolist">
+                    <li class="active">
+                        <a href="{:U('Product/index')}">按产品类别查看</a>
+                    </li>
+                </ul>
+                <else />
+            </if>
+
+        </div>
+        <div class="span10">
+            <div class="pull-left">
+                <ul class="nav pull-left">
+                    <li class="pull-left">
+                        <ul class="nav pull-left">
+                            <form action="/product/manager" method="get">
+                            <li id="searchContent" class="pull-left">
+                                <input id="search" type="text" class="input-medium search-query" name="search" />&nbsp;&nbsp;
+                            </li>
+                            <li class="pull-left">
+                                <button type="submit" id="dosearch" class="btn" onclick="search()"> <img src="/Public/img/search.png"/>搜索</button>
+                            </li>
+                            </form>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="pull-right">
+                <if condition="$Think.session.position_id eq '14' OR $Think.session.position_id eq '15' ">
+                    <else/>
+                    <a class="btn btn-info" href="{:U('Product/addmanager')}"><i class="icon-plus"></i>&nbsp; 添加管家</a>&nbsp;
+                </if>
+            </div><br/><br/>
+        </div>
+        <div class="span10">
+            <table class="table table-hover table-striped table_thead_fixed" style="margin-left:100px;">
+                <thead>
+                <tr id="childNodes_num">
+                    <th style="width:10%;">图片</th>
+                    <th>产品名称</th>
+                    <th>产品类别</th>
+                    <th>审核状态</th>
+                    <th>产品状态</th>
+                    <th>创建人</th>
+                    <th>操作 </th>
+                </tr>
+                </thead>
+                <tbody>
+                <volist name="list" id="vo">
+                    <tr>
+                        <td><volist name="vo['serviceGoodsPicture']" id="v">
+                            <img src="{$v.realPicUrl}">
+                        </volist></td>
+                        <td>{$vo.serviceGoodsBase.serviceName}</td>
+                        <td>{$vo.serviceGoodsBase.text}</td>
+                        <td><if condition="$vo['serviceGoodsBase']['checkStatus'] == 0">
+                            待审核
+                            </if>
+                            <if condition="$vo['serviceGoodsBase']['checkStatus'] == 1">
+                                审核通过
+                            </if>
+                            <if condition="$vo['serviceGoodsBase']['checkStatus'] == 2">
+                                审核失败
+                            </if>
+                        </td>
+                        <td><if condition="$vo['serviceGoodsBase']['serviceStatus'] == 1">
+                            上架
+                            </if>
+                            <if condition="$vo['serviceGoodsBase']['serviceStatus'] == 0">
+                                下架
+                            </if>
+                        </td>
+                        <td>{$vo.serviceGoodsBase.userNickName}</td>
+                        <td class="tc fixed_w">
+                            <a href="{$vo.serviceGoodsBase.sid}" class="btn btn-primary" style="margin-right: 5px;">上 架</a>
+                            <a href="{$vo.serviceGoodsBase.sid}" class="btn btn-default" style="margin-right: 5px;" >下 架</a>
+                            <a href="__APP__/Product/updatemanager?sid={$vo.serviceGoodsBase.sid}" class="btn" id="update" style="margin-right: 5px;" >编辑</a>
+                            <a href="{$vo.serviceGoodsBase.sid}" class="btn btn-primary-dropdown-toggle" style="margin-right: 5px;">删除</a>
+                        </td>
+                    </tr>
+                    </volist>
+                </tbody>
+
+            </table>
+            {$page}
+
+        </div>
+
+    </div>
+</div>
+<script src="__PUBLIC__/js/images-loaded.min.js" type="text/javascript"></script>
+<script src="__PUBLIC__/js/litebox.min.js" type="text/javascript"></script>
+<script src="__PUBLIC__/js/service_list.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function() {
+        $("#check_all").click(function() {
+            $("input[class='check_list']").prop('checked', $(this).prop("checked"));
+        });
+
+    });
+    $nodes_num = document.getElementById("childNodes_num").children.length;
+    $("#td_colspan").attr('colspan', $nodes_num);
+</script>
+
+<script>
+    //图标弹出
+    function Img() {
+        fpopload('选择菜单图标',500,350,'__APP__/System/img/');
+        addDiv($('#f_pop'));
+    }
+
+    $('.btn-primary').click(function(event) {
+        event.preventDefault();
+        if (!confirm('确定要上架吗？')) {
+            return false;
+        }
+        var id=$(this).attr('href');
+        $.ajax({
+            url:'__APP__/Product/onper/',
+            dataType:'json',
+            type:'POST',
+            data:'id='+id,
+            success: function(data) {
+                location.reload()
+            }
+        });
+    });
+
+    $('.btn-default').click(function(event) {
+        event.preventDefault();
+        if (!confirm('确定要下架吗？')) {
+            return false;
+        }
+        var id=$(this).attr('href');
+        $.ajax({
+            url:'__APP__/Product/upper/',
+            dataType:'json',
+            type:'POST',
+            data:'id='+id,
+            success: function(data) {
+                location.reload()
+            }
+        });
+    });
+
+    $('.btn-primary-dropdown-toggle').click(function(event) {
+        event.preventDefault();
+        if (!confirm('确定要删除吗？')) {
+            return false;
+        }
+        var id=$(this).attr('href');
+        $.ajax({
+            url:'__APP__/Product/del/',
+            dataType:'json',
+            type:'POST',
+            data: {
+                id: id
+            },
+            success: function(data) {
+                location.reload()
+            }
+        });
+    });
+</script>
+<include file="Public:footer" />

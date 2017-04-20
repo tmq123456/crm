@@ -1,0 +1,217 @@
+<include file="Public:header" />
+<style type="text/css">
+    .datetime{width: 86px;}
+    .datemoney{width: 68px;}
+    .order1{border-bottom:1px solid #ccc;border-top:1px solid #ccc;border-right:1px solid #ccc;margin-bottom:10px; }
+    .orderb{border-left:1px solid #ccc;border-top:1px solid #ccc;padding: 10px;}
+    .order12{font-size: 18px;}
+    .order2{font-size: 16px;border-top: 1px solid #ccc;}
+    .order22{float: left;border-left:1px solid #ddd;height: 100px;padding: 10px;}
+    .order221{float: left;border-left:1px solid #ddd;height: 100px;padding: 10px;width:190px;}
+    .order222{float: left;border-left:1px solid #ddd;height: 100px;padding: 10px;width:160px;}
+    .order223{float: left;border-left:1px solid #ddd;height: 100px;padding: 10px;width:165px;}
+    .order224{float: left;border-left:1px solid #ddd;height: 100px;padding: 10px;width:90px;}
+    .order225{float: left;border-left:1px solid #ddd;height: 100px;padding: 10px;width:90px;padding-left:33px; }
+    .order23{padding: 5px;}
+    .ordermoney{padding: 5px;}
+    .product{width: 100%}
+    .product tr td{border:0px solid #fff; }
+    .table th, .table td{text-align: center;vertical-align:middle;border: 1px solid #EBF1F1;}
+    #secompany{color:red;}
+</style>
+<div class="container">
+    <div class="page-header" style="border:none; font-size:14px;">
+        <ul class="nav nav-tabs">
+            <li class="active"><a  href="{:U('order/index')}"><img src="__PUBLIC__/img/caigou.png"/>&nbsp;订单</a></li>
+            <li class=""><a href="{:U('order/analytics')}"><img src="__PUBLIC__/img/tongji.png"/> &nbsp;统计</a></li>
+        </ul>
+    </div>
+    <include file="Public:alert" />
+    <div class="row">
+        <div class="span2 knowledgecate">
+            <ul class="nav nav-list">
+                <li class="">
+                    <a href="{:U('Order/index')}">已卖出商品</a>
+                </li>
+                <li class="">
+                    <a href="{:U('Order/back')}">售后申请处理</a>
+                </li>
+                <li>
+                    <a href="{:U('Order/service')}">已销售的社区服务</a>
+                </li>
+                <li class="active">
+                    <a href="{:U('Order/managerservice')}">已销售的管家券服务</a>
+                </li>
+            </ul>
+        </div>
+        <div class="span10">
+            <if condition = "$Think.session.position_id eq '14' OR $Think.session.position_id eq '15' OR $Think.session.position_id eq '16'">
+                <p class="view">
+                    <volist name="user" id="vo">
+                        <a href="{:U('Order/managerservice',array('userId'=>$vo['user_id']))}" class="companyUser"<if condition="$Think.cookie.companyUser eq $vo['user_id']">id="secompany"</if>>{$vo.company}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </volist>
+                </p>
+            </if>
+            <div class="pull-left">
+                <ul class="nav pull-left">
+                    <li class="pull-left">
+                        <form class="form-inline" id="searchForm" action="{:U('Order/managerservice')}" method="get">
+                            <ul class="nav pull-left">
+                                <li id="conditionContent" class="pull-left"> &nbsp;&nbsp;支付方式:
+                                    <select id="condition" style="width:auto" name="payMent">
+                                        <option value="99" <if condition="$data['payMent'] == 99">selected</if>>全部</option>
+                                        <option value="0" <if condition="$data['payMent'] == 0">selected</if>>支付宝</option>
+                                        <option value="1" <if condition="$data['payMent'] == 1">selected</if>>微信</option>
+                                        <option value="2" <if condition="$data['payMent'] == 2">selected</if>>余额</option>
+                                        <option value="3" <if condition="$data['payMent'] == 3">selected</if>>银行卡</option>
+                                        <option value="4" <if condition="$data['payMent'] == 4">selected</if>>线下汇款</option>
+                                    </select>&nbsp;
+                                </li>
+                                <li class="pull-left">
+                                    &nbsp;&nbsp;订单时间:&nbsp;&nbsp;
+                                    <input type="text" id="start_date" value="{$data.beginTime}" name="beginTime" onClick="WdatePicker({dateFmt:'yyyy-MM-dd', maxDate:&quot;#F{$dp.$D('end_date')||'2038-01-01'}&quot;})" class="Wdate" style="width: 95px;"/>到
+                                    <input type="text" id="end_date" value="{$data.endTime}" onClick="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:&quot;#F{$dp.$D(\'start_date\')}&quot;,maxDate:'2038-01-01'})" name="endTime" class="Wdate" style="width: 95px;"/> &nbsp;
+                                </li>
+                                <li class="pull-left">
+                                    &nbsp;&nbsp;订单金额:&nbsp;&nbsp;
+                                    <input   name="beginMoney" id="" type="text" value="{$data.beginMoney}" class="datemoney beginMoney"/> <span id="">到
+									<input  name="endMoney" id="" type="text" value="{$data.endMoney}" class="datemoney endMoney"/> &nbsp;
+                                </li>
+                                <li id="searchContent" class="pull-left">
+                                    <input id="search" type="text" class="input-medium search-query" name="k" placeholder="订单编号,商品名称" value="{$data.orderName}"/>&nbsp;
+                                </li>
+                                <li class="pull-left">
+                                    <input type="hidden" name="m" value="order"/>
+                                    <input type="hidden" name="a" id="a" value="managerservice"/>
+                                    <button type="submit" id="" class="btn"> <img src="__PUBLIC__/img/search.png"/> 确 定</button>
+                                </li>
+                            </ul>
+                        </form>
+                    </li>
+                </ul>
+            </div><br><br>
+            <p class="view">
+                <b>订单列表</b>
+                <img src=" __PUBLIC__/img/by_owner.png"/>&nbsp;
+                <a href="{:U('Order/managerservice?orderStatus=&tebSort=3')}" <if condition="$_GET['orderStatus'] eq ''">class="active"</if>>{:L('ALL')}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                <a href="{:U('Order/managerservice?orderStatus=s1&tebSort=3')}" <if condition="$_GET['orderStatus'] eq 1">class="active"</if>>待付款</a> &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp; &nbsp;
+                <a href="{:U('Order/managerservice?orderStatus=t1&tebSort=3')}" <if condition="$_GET['orderStatus'] eq 2">class="active"</if>>待销费</a> &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                <a href="{:U('Order/managerservice?orderStatus=t2&tebSort=3')}" <if condition="$_GET['orderStatus'] eq 3">class="active"</if>>已消费</a> &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                <a href="{:U('Order/managerservice?orderStatus=t4&tebSort=3')}" <if condition="$_GET['orderStatus'] eq 4">class="active"</if>>已退款</a>
+            </p>
+
+            <table class="table table-hover table_thead_fixed" width="100%" border="1" cellspacing="1" cellpadding="0">
+                <volist name="order" id="vo">
+                    <tr>
+                        <td>&nbsp;&nbsp;&nbsp;订单编号:{$vo.orderNo}</td>
+                        <td colspan="4">下单时间:{$vo.createTime}&nbsp;&nbsp;&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table class="product">
+                                <tr>
+                                    <td><img src="{$vo.servicePicUrl}" alt="" style="width:80px;"></td>
+                                    <td>
+                                        <div class="order23">{$vo.serviceName}</div>
+                                        <div class="order23">{$vo.sumFee}*{$vo.sumCount}</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            订单总金额:{$vo.price}元
+                        </td>
+                        <td>
+                            <div class="order23">收货人:{$vo.sellerName}</div>
+                            <div class="order23">
+                                支付方式:
+                                <if condition="$vo[payType] eq '0'">支付宝
+                                    <elseif condition="$vo[payType] eq '1'"/>微信
+                                    <elseif condition="$vo[payType] eq '2'"/>余额支付
+                                    <elseif condition="$vo[payType] eq '3'"/>银行卡
+                                    <elseif condition="$vo[payType] eq '4'"/>线下支付
+                                    <else/>未支付
+                                </if>
+                            </div>
+                        </td>
+                        <td>
+                            <if condition="$vo[ticketstatus] eq 's1'">待支付
+                                <elseif condition="$vo[ticketstatus] eq 't1'"/>待消费
+                                <elseif condition="$vo[ticketstatus] eq 't2'"/>已消费
+                                <elseif condition="$vo[ticketstatus] eq 't4'"/>已退款
+                                <elseif condition="$vo[ticketstatus] eq 't0'"/>订单未付款超时关闭
+                                <else/>
+                            </if>
+                        </td>
+                        <td>
+                            <div><a href="__APP__/Order/viewmanager?ordreNo={$vo.orderNo}&userId={$userId}">订单详情</a></div>
+                        </td>
+                    </tr>
+                </volist>
+            </table>
+            {$page}
+        </div>
+    </div>
+
+    <script>
+        $(function(){
+            $('.status').click(function () {
+                $('.status').removeClass("active");
+                $(this).addClass("active");
+            });
+        });
+
+        $('.operation').click(function(){
+            if(!confirm("确认操作?")){
+                window.event.returnValue = false;
+                return;
+            }
+            var orderNo = $(this).attr('orderNo');
+            var status = $(this).attr('status');
+            var orderChangeDatetime = $(this).attr('orderChangeDatetime');
+
+            if (status == 'F0' || status == 'F13') {
+                var orderStatusChanged = 'F11';
+                var childOrderStatusChanged = '11';
+            }else if(status == 'F1'){
+                var type = $(this).attr('type');
+                if(type == 1){
+                    var orderStatusChanged = 'F2';
+                    var childOrderStatusChanged = '2';
+                }else if(type ==2){
+                    var orderStatusChanged = 'F3';
+                    var childOrderStatusChanged ='3';
+                }
+            }
+            //alert(orderStatusChanged);
+            $.ajax({
+                url:'{$url}/manager/order/megerOrderStatusChange',
+                data:{orderNo:orderNo,orderStatusChanged:orderStatusChanged,childOrderStatusChanged:childOrderStatusChanged,orderType:1,orderChangeDatetime:orderChangeDatetime},
+                type:'post',
+                cache:'false',
+                dataType:'json',
+                success:function(json){
+                    //console.log(json);
+                    alert(json.message);
+                    location.reload();
+                },
+                error:function(){
+                    alert('异常!');
+                }
+            });
+        });
+
+        $('.beginMoney').blur(function(){
+            beginMoney = $('.beginMoney').val();
+        });
+        $('.endMoney').blur(function(){
+            var endMoney = $('.endMoney').val();
+            if (beginMoney > endMoney) {
+                alert('请正确输入订单金额!');
+                return;
+            }
+        });
+    </script>
+    <script src="__PUBLIC__/js/images-loaded.min.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/litebox.min.js" type="text/javascript"></script>
+    <include file="Public:footer" />

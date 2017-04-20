@@ -1,0 +1,395 @@
+<include file="Public:header" />
+<script type="text/javascript" src="__PUBLIC__/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/ueditor/ueditor.all.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/kindeditor-all-min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/zh_CN.js"></script>
+<script src="__PUBLIC__/js/PCASClass.js" type="text/javascript"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.min.js" charset="UTF-8"></script>
+<script type="text/javascript" src="__PUBLIC__/js/messages_zh.js" charset="UTF-8"></script>
+<link rel="stylesheet" href="__PUBLIC__/css/kindeditor.css" type="text/css" />
+<link rel="stylesheet" href="__PUBLIC__/css/jquery.fileupload.css" type="text/css" />
+<link rel="stylesheet" href="__PUBLIC__/css/base.css" type="text/css" />
+<style type="text/css">
+    .basic {
+        font-size: 20px;
+        font-weight: bold;
+        margin-left: 65px;
+        margin-bottom: 14px;
+    }
+
+    .content {
+        margin-left: 75px;
+        font-size: 17px;
+        font-family: 微软雅黑;
+    }
+
+    .quote {
+        border: 1px solid #ccc;
+        width: 800px;
+    }
+</style>
+<div class="container">
+    <!-- Docs nav ================================================== -->
+    <div class="page-header">
+        <h4>修改管家券</h4>
+    </div>
+    <div class="row">
+        <input type="hidden" id="product" product="{:U('Product/index')}">
+        <div class="span12">
+            <form id="form1" action="" method="post" enctype="multipart/form-data">
+                <input type='hidden' name="r" />
+                <input type='hidden' name="module" />
+                <input type='hidden' name="id" />
+                <input type='hidden' name="sid"  value="{$sid}"/>
+                <if condition="$Think.session.position_id eq '16' OR $Think.session.position_id eq '19'">
+                    <input type="hidden" id="userid" userId="<?php echo $_SESSION['user_id']?>" />
+                    <else />
+                    <input type="hidden" id="userid" userId="<?php echo $_SESSION['parent_id']?>" />
+                </if>
+                <table class="table" width="95%" border="0" cellspacing="1" cellpadding="0">
+                    <tbody>
+                    <tr>
+                        <th colspan="4">基本信息</th>
+                    </tr>
+                    <tr>
+                        <td class="tdleft" width="15%"> 商品名称:</td>
+                        <td width="35%"><input type="text" id="name" name="name" value="{$list.serviceName}"/> &nbsp; <span id="nameTip" style="color:red;"></span></td>
+                        <td class="tdleft" width="15%">商品介绍:</td>
+                        <td width="35%"><input type="text" id="crm_gnhpxk" name="crm_gnhpxk" value="{$list.ticketIntroduce}"/> &nbsp; <span id="crm_gnhpxkTip" style="color:red;"></span></td>
+                    </tr>
+                    <!--<tr>-->
+                        <!--<td class="tdleft" width="15%">商品类目:</td>-->
+                        <!--<td width="35%">-->
+                            <!--<span id="typename"></span>-->
+
+                            <!--<a class="btn btn-primary pull-right" id="#" href="javascript:void(0);" onclick="typelistshow()">-->
+                                <!--<i class="icon-plus"></i>&nbsp;&nbsp;选择-->
+                            <!--</a>-->
+                        <!--</td>-->
+                        <!--<td width="35%"><input type="text" id="crm_efiily" name="crm_efiily" value="{$list.ticketType}"/> &nbsp; <span id="crm_efiilyTip" style="color:red;"></span></td>-->
+                    <!--</tr>-->
+                    <tr class="type_content" style="display: none;">
+                        <td class="tdleft" width="15%"></td>
+                        <td colspan="3">
+                            <div id="typelist1">
+                                加载中，请稍后……
+                            </div>
+                            <div id="typelist2"></div>
+                            <div id="typelist3"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="4">产品图片</th>
+                    </tr>
+                    <tr>
+                        <td class="tdleft" height="100">主图</td>
+                        <td colspan="3" height="100">
+                            <table class="table table-striped">
+                                <tbody>
+                                <tr>
+                                    <td width="20%">
+                                        <div class="thumbnail thumb80">
+                                            <img id="main_pic_prev" class="thumb80" />
+                                        </div>
+                                    </td>
+                                    <td width="35%">
+                                        <p><span id="main_pic_prev_name">无</span></p>
+                                    </td>
+                                    <td width="25%">
+                                        <p><span id="main_pic_prev_size">0</span> KB</p>
+                                    </td>
+                                    <td width="30%">
+                                        <div class="btn btn-success fileinput-button">
+                                            <span>选择文件</span>
+                                            <input type="file" name="main_pic[]" id="main_pic" required>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <td colspan="4" style="color: #696969;">
+                                        - 建议上传600*600的图片。<br> - 支持gif,jpg,jpeg,png,bmp格式的图片。
+                                    </td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdleft" style="min-height:50">副图</td>
+                        <td colspan="3" style="min-height:50">
+                            <div class="div_add">
+                                <a class="btn btn-primary pull-right" id="btn_add_files" href="javascript:void(0);">
+                                    <i class="icon-plus"></i>&nbsp;&nbsp;新增
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdleft" width="15%">产品描述:</td>
+                        <td colspan="3">
+                            <script id="ueditor" name="crm_qmbrki" type="text/plain" style="width:850px;height:300px;"></script>
+                            <span id="crm_basrhsTip" style="color:red;"></span></td>
+                    </tr>
+                    <tr>
+                        <th colspan="4">交易信息</th>
+                    </tr>
+                    <tr>
+                        <td class="tdleft" width="15%">商品现价：</td>
+                        <td colspan="3">
+                            <input type="text" id="crm_fwuzfa" name="crm_fwuzfa" class="input-medium" value="{$list.servicePrice}">
+                        </td>
+                    </tr>
+                    <tr class="shopprice">
+                        <td class="tdleft" width="15%">商品原价:</td>
+                        <td colspan="3">
+                            <input type="text" class="add_input_text unitprice servicePrice" id="crm_fwuzfa_b" name="unitprice_0" number="true" min="0" required value="{$list.ticketOriginalPrice}"/> 元</td>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="tdleft" width="15%">有效期:</td>
+                        <td>
+                            <if condition="$list['isExpire'] == 0">
+                            <input type="radio" name="stop" value="0" checked id="no">不限制
+                                <input type="radio" name="stop" value="1" id="yes">限制
+                            </if>
+                            <if condition="$list['isExpire'] == 1">
+                                <input type="radio" name="stop" value="0" id="no">不限制
+                            <input type="radio" name="stop" value="1" checked id="yes">限制
+                                </if>
+                        </td>
+                        <td><span style="display: none" id="disp">有效期到<input type="text" id="start_time" name="start_time" onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" value="{$list.expireTime}"/></span></td>
+                    </tr>
+                    <tr>
+                        <td class="tdleft" width="15%">供应总量:</td>
+                        <td colspan="3">
+                            <input type="text" id="discount" class="add_input_text discount" maxlength ='4' value="{$list.stockNum}"/>
+                        </td>
+                    </tr>
+                    <tr class="freight">
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td style="text-align:center;" colspan="4"><input id="submit" name="submit" class="btn btn-primary" type="button" value="保存" />&nbsp;<input class="btn" type="button" onclick="history.go(-1)" value="返回" /></td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="mask"></div>
+<div class="dialog" style="display:none; ">
+    <img src="__PUBLIC__/img/load.gif">正在上传……
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/uploadPreview.js"></script>
+<script src="__PUBLIC__/js/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    //初始化上传图片
+    $("body").on('click', 'input[type="file"]', function() {
+        var selector = $(this).attr('id');
+        $("#" + selector).uploadPreview({
+            Img: selector + "_prev",
+            Width: 120,
+            Height: 120
+        });
+    });
+
+    var ue = UE.getEditor('ueditor');
+    //获取内容
+    function getContent() {
+        return UE.getEditor('ueditor').getContent();
+    }
+
+
+    $("#yes").click(function(){
+        $("#disp").show();
+    })
+    $("#no").click(function(){
+        $("#disp").hide();
+        $("#start_time").val()=="";
+    })
+
+    if($("input:radio:checked").val()==1){
+        $("#disp").show();
+    }
+
+
+    //表单提交
+    $("input[name=submit]").click(function(event) {
+        var userid = $("#userid").attr("userId");
+        var productname = $("#name").val();
+        var detail = getContent();
+        //console.log(detail);return;
+        if (detail.length > 4000) {
+            alert('商品描述的字数超出最大限制!');
+            return false;
+        }
+        var goodsModel = $("#crm_gnhpxk").val();
+        var goodsBrand = $("#crm_efiily").val();
+        var price = $("#crm_fwuzfa").val(); //商品现价
+        var now_price = $("#crm_fwuzfa_b").val();//商品原价
+        var typestr = $('#typename').html();
+        var goodsType = $('#typename').attr('value');//商品类目
+        var tradeClassHeadArrary = '[{"value":"' + goodsType + '","text":"' + typestr + '"}]';
+        var type = $("#typename");
+
+        var discount = $('.discount').val();//总量
+
+        if($("input:radio:checked").val()==1){
+            var stop = 1;
+        }else{
+            var stop = 0;
+        }
+
+        var start_time = $("input[name=start_time]").val();
+
+//        if(start_time==""){
+//            var stop = 0;
+//        }else{
+//            var stop = 1;
+//        }
+
+        var sid = $("input[name=sid]").val();
+
+        var imgstr = [];
+        $.each($("input:file"), function (i, val) {
+            var imgitem;
+            if (i == 0) {
+                imgitem = '{"picServiceUrl": "' + $(this).attr("key") + '","mainPage": "1"}';
+                imgstr.push(imgitem);
+            } else {
+                imgitem = '{"picServiceUrl": "' + $(this).attr("key") + '","mainPage": "0"}';
+                imgstr.push(imgitem);
+            }
+        });
+        //console.log(imgstr.length);return false;
+        var imgstrarr = '[' + imgstr.toString() + ']';
+        if (type.html() == "") {
+            alert("请选择商品类目")
+        } else if (detail == "") {
+            alert('请填写商品详情信息');
+        } else {
+            $.ajax({
+                type: "post",
+                url: ' __APP__/Product/updatemanager/',
+                data: {
+                    userId: userid,
+                    serviceName: productname,
+                    serviceDetail: detail,
+                    serviceUnit: "元",
+                    price: price,
+                    goodsModel: goodsModel,
+                    goodsBrand: goodsBrand,
+                    now_price: now_price,
+                    tradeClassHeadArrary: tradeClassHeadArrary,
+                    goodsType: goodsType,
+                    servicePictureArray: imgstrarr,
+                    discount: discount,
+                    stop: stop,
+                    start_time: start_time,
+                    sid:sid
+                },
+                dataType: 'json',
+                cache: false,
+                success: function (data) {
+                    if (data==1) {
+                        window.location.href = '__APP__/Product/manager/';
+                    } else {
+                        alert(data.message);
+                    }
+                }
+            });
+        }
+    });
+
+
+    //产品编辑页初始化
+    $(document).ready(function() {
+
+        $.ajax({
+            type: "post",
+            url: 'http://192.168.1.207:8003/manager/serviceGoods/getGoodsBase',
+            async: true,
+            data: {
+                sid: sid,
+                module:'community_ticket'
+            },
+            dataType: "json",
+            cache: false,
+            success: function(data) {
+                //console.log(data)
+                if(data.code == 2000) {
+                    var trade = data.data.resultMap;
+                    //console.log(trade);
+                    if (trade.checkComment!==null&&trade.checkComment!=="") {
+                        $(".warning").show();
+                        $(".warning .checkComment").text(trade.checkComment);
+                    }
+
+                    ue.ready(function (editor) {
+                        ue.setContent(trade.serviceDetail);
+                    });
+
+                    //图片初始化
+                    seq_item = 1;
+                    $.each(data.data.picList, function(index, val) {
+                        console.log(val);
+                        if($(this)[0].mainPage) {
+                            $("#main_pic_prev").attr("src", $(this)[0].realPicUrl);
+                            $("#main_pic").attr("key", $(this)[0].picServiceUrl);
+                        } else {
+                            var add_file_html = '';
+                            add_file_html += '<table  id="tables_files_' + seq_item + '" class="table table-striped">';
+                            add_file_html += '<tbody class="files">';
+                            add_file_html += '<tr class="template-upload fade in">';
+                            add_file_html += '<td width="20%">';
+                            add_file_html += '<div class="thumbnail thumb80">';
+                            add_file_html += '<img id="sec_pic_' + seq_item + '_prev" class="thumb80" src="' + $(this)[0].realPicUrl + '"/>';
+                            add_file_html += '</div>';
+                            add_file_html += '</td>';
+                            // add_file_html += '<td width="35%">';
+                            // add_file_html += '<p><span id="sec_pic_' + seq_item + '_prev_name">无</span></p>';
+                            // add_file_html += '</td>';
+                            // add_file_html += '<td width="25%">';
+                            // add_file_html += '<p><span id="sec_pic_' + seq_item + '_prev_size">0</span> KB</p>';
+                            // add_file_html += '</td>';
+                            add_file_html += '<td width="3%">';
+                            add_file_html += '<div class="btn btn-success fileinput-button">';
+                            add_file_html += '<span>选择文件</span>';
+                            add_file_html += '<input type="file" name="sec_pic[]" id="sec_pic_' + seq_item + '" key="' + $(this)[0].picServiceUrl + '">';
+                            add_file_html += '</div>&nbsp;';
+                            add_file_html += '<a class="btn btn-warning fileinput-button btn_reduce_files">';
+                            add_file_html += '<span>取消</span>';
+                            add_file_html += '</a>';
+                            add_file_html += '</td>';
+                            add_file_html += '</tr>';
+                            add_file_html += '</tbody>';
+                            add_file_html += '</table>';
+                            $('.div_add').before(add_file_html);
+                            seq_item++;
+                        }
+
+                    });
+
+                }
+            }
+        });
+    });
+
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if(r != null) return unescape(r[2]);
+        return null;
+    }
+
+    var sid = getQueryString("sid");
+</script>
+
+</body>
+</html>
