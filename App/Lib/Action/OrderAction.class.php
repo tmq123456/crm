@@ -3,7 +3,7 @@ class OrderAction extends Action{
 	public function _initialize(){
 		$action = array(
 			'permission'=>array(),
-			'allow'=>array('back','send','view','view2','zuhewhere','service','viewback','analytics','viewservice','managerservice','viewmanager')
+			'allow'=>array('back','send','view','view2','zuhewhere','service','viewback','analytics','viewservice','managerservice','viewmanager','exchange')
 		);
 		B('Authenticate', $action);
 	}
@@ -533,8 +533,13 @@ class OrderAction extends Action{
             }
         }
         //组合$data
-        $data['userId']='598a8776182246a1abfc84c206357363';
-        $data['buyOrSeller']=false;
+        //$data['userId']='1D9AF207FFDEBE95CC2C8DD2D150C684';
+        if(!isset($_GET['buyType'])||$_GET['buyType']==1){
+            $data['buyOrSeller']=true;
+        }else{
+            $data['buyOrSeller']=false;
+        }
+        //$data['buyOrSeller']=false;
         $data['payType'] = isset($data['payMent'])?$data['payMent']:null;
         $data['beginTimeStr'] = isset($data['beginTime'])?$data['beginTime']:null;
         $data['endTimeStr'] = isset($data['endTime'])?$data['endTime']:null;
@@ -579,21 +584,76 @@ class OrderAction extends Action{
     //服务订单详情
     public function viewmanager(){
         // G('begin');
-        $data['sid'] = $_GET['ordreNo'];
+        $data['sid'] = $_GET['sid'];
         $data['userId'] = $_GET['userId'];
-        //dump($data);
         $html = send_post(C('URL').'/manager/ticket/getOrderTicketRecord',$data);
-        //print_r($html);exit;
         $html = json_decode(json_encode($html,true),true);
         if($html['code'] == 5000){
             echo '<script>location.reload();</script>';
         }
-        //dump($html);
+        //print_r($html);exit;
         $this->assign('order',$html['data']);
-        $this->assign('shop',$html['data']['childOrderList']);
-        $this->assign('url',C("URL"));
-        // G('end');
-        // echo G('begin','end').'s';
+        $this->assign('ticket',$html['data']['tickList']);
+        $this->assign('price',$html['data']['orderTicketRecord']['sumCount']*$html['data']['orderTicketRecord']['sumFee']);
+        $this->display();
+    }
+
+    /**
+     *
+     * 管家券兑换记录
+     */
+    public function exchange(){
+        if(session('position_id') == 14 || session('position_id') == 15 || session('position_id') == 16){
+            if($_GET['userId'] !== null){
+                cookie('companyUser',$_GET['userId']);
+            }
+            $data['userId'] = cookie('companyUser');
+            if($data['userId'] == ''){
+                $data['userId'] = $_SESSION['user_id'];
+            }
+            if(session('position_id') == 14){
+                $parentid = M('user as u')->join('INNER JOIN crm_role as r on r.user_id = u.user_id')->where('u.parent_id = "%s" and r.position_id in (15,21)',session('user_id'))->field('u.user_id')->select();
+                $map = array();
+                foreach ($parentid as $val){
+                    array_push($map,$val['user_id']);
+                }
+                $where['u.parent_id'] = array(in,$map);
+                $userId = M('user as u')->join('crm_role as r on r.user_id = u.user_id')->where("r.position_id in(16,19,17)")->where($where)->field('u.user_id as user_id,name,company')->select();
+                ;
+            }else if(session('position_id')==15 ){
+                $userId = M('user as u')->join('INNER JOIN crm_role as r on r.user_id = u.user_id')->where('u.parent_id = "%s" and r.position_id = 17',session('user_id'))->field('u.user_id as user_id,name,company')->select();
+            }else if(session('position_id') == 16){
+                $userId = M('user as u')->join('INNER JOIN crm_role as r on r.user_id = u.user_id')->where('u.parent_id = "%s" and r.position_id in(16,19)',session('parent_id'))->field('u.user_id as user_id,name,company')->select();
+            }
+
+            $this->assign('user',$userId);
+        }else{
+            if(session('position_id') == 19 || session('position_id') == 17){
+                $data['userId'] = session('user_id');
+            }else{
+                $data['userId'] = $_SESSION['parent_id'];
+            }
+        }
+
+        if($this->isPost()){
+            //$datas['sellerId']='1D9AF207FFDEBE95CC2C8DD2D150C684';
+            $datas['sellerId']=$data['userId'];
+            $datas['ticketNo']=$_POST['id'];
+            //print_r($datas);exit;
+            $status=send_post('http://192.168.1.207:8001/manager/ticket/checkOrderTicketRecord',$datas);
+            return $this->ajaxReturn();
+        }
+        //$datas['userId']='1D9AF207FFDEBE95CC2C8DD2D150C684';
+        $data['pageSize']=10;
+        $data['start']=$_GET['p']==0?0:($_GET['p']-1)*$data['pageSize'];
+        $list=send_post('http://192.168.1.207:8001/appserver/ticketLog/queryTicketLogList',$data);
+        $list=json_decode(json_encode($list),TRUE);
+        //print_r($list['data']['ticketLogList']);exit;
+        import("@.ORG.Page");
+        $Page = new Page($list['data']['count'],$data['pageSize']);				//实例化分页类 传入总记录数和每页显示的记录数
+        $show = $Page->show();
+        $this->assign('page',$show);
+        $this->assign('list',$list['data']['ticketLogList']);
         $this->display();
     }
 

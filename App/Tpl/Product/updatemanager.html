@@ -267,6 +267,13 @@
                 imgstr.push(imgitem);
             }
         });
+        if(imgstr.length < 3){
+            alert('图片至少上传三张');
+            return false;
+        }else if(imgstr.length > 6) {
+            alert('图片最多上传六张');
+            return false;
+        }
         //console.log(imgstr.length);return false;
         var imgstrarr = '[' + imgstr.toString() + ']';
         if (type.html() == "") {

@@ -88,7 +88,6 @@ class ProductAction extends Action {
 	 *
 	 * */
 	public function index(){
-        //print_r($_SESSION);exit;
 		if(session('position_id') == 19 || session('position_id') == 20 || session('position_id') == 16){
 			$this->assign('position',session('position_id'));
 			$this->assign('url',C('URl'));

@@ -42,6 +42,9 @@
                 <li class="active">
                     <a href="{:U('Order/managerservice')}">已销售的管家券服务</a>
                 </li>
+                <li>
+                    <a href="{:U('Order/exchange')}">兑换</a>
+                </li>
             </ul>
         </div>
         <div class="span10">
@@ -57,6 +60,8 @@
                     <li class="pull-left">
                         <form class="form-inline" id="searchForm" action="{:U('Order/managerservice')}" method="get">
                             <ul class="nav pull-left">
+                                <li><input type="radio" name="buyType" value="1" <if condition="!isset($_GET['buyType'])||$_GET['buyType']==1">checked</if>>买家
+                                    <input type="radio" name="buyType" value="2" <if condition="isset($_GET['buyType'])&&$_GET['buyType']==2">checked</if>>卖家</li>
                                 <li id="conditionContent" class="pull-left"> &nbsp;&nbsp;支付方式:
                                     <select id="condition" style="width:auto" name="payMent">
                                         <option value="99" <if condition="$data['payMent'] == 99">selected</if>>全部</option>
@@ -144,7 +149,7 @@
                             </if>
                         </td>
                         <td>
-                            <div><a href="__APP__/Order/viewmanager?ordreNo={$vo.orderNo}&userId={$userId}">订单详情</a></div>
+                            <div><a href="__APP__/Order/viewmanager?sid={$vo.sid}&userId={$userId}">订单详情</a></div>
                         </td>
                     </tr>
                 </volist>

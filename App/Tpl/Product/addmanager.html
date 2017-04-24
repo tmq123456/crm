@@ -143,7 +143,7 @@
                     <tr class="shopprice">
                         <td class="tdleft" width="15%">商品原价:</td>
                         <td colspan="3">
-                            <input type="text" class="add_input_text unitprice servicePrice" id="crm_fwuzfa_b" name="unitprice_0" number="true" min="0" required/> 元</td>
+                            <input type="text" class="add_input_text unitprice servicePrice" id="crm_fwuzfa_b" name="unitprice_0"/> 元</td>
                         </td>
                     </tr>
 
@@ -245,6 +245,13 @@
                 imgstr.push(imgitem);
             }
         });
+        if(imgstr.length < 3){
+            alert('图片至少上传三张');
+            return false;
+        }else if(imgstr.length > 6) {
+            alert('图片最多上传六张');
+            return false;
+        }
         //console.log(imgstr.length);return false;
         var imgstrarr = '[' + imgstr.toString() + ']';
         if (type.html() == "") {

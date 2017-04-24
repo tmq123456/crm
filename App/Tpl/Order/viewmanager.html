@@ -14,17 +14,12 @@
     <div class="row">
         <div class="span12">
             <div class="orderno">
-                <div class="ordernot">订单编号 : {$order.childOrderList.0.orderNo}</div>
-                <div class="ordernot">订单状态 : <span style="color:#029BE2;font-weight: bold;">	<if condition="$order['totalOrderInfo']['totalOrderStatus'] eq 'F0'">待支付
-                    <elseif condition="$order['totalOrderInfo']['totalOrderStatus'] eq 'F1'"/>已付款,待接单
-                    <elseif condition="$order['totalOrderInfo']['totalOrderStatus'] eq 'F2'"/>已接单,服务中
-                    <elseif condition="$order['totalOrderInfo']['totalOrderStatus'] eq 'F3'"/>拒绝服务,已退款
-                    <elseif condition="$order['totalOrderInfo']['totalOrderStatus'] eq 'F4'"/>服务已完成
-                    <elseif condition="$order['totalOrderInfo']['totalOrderStatus'] eq 'F5'" />逸会员申请退款
-                    <elseif condition="$order['totalOrderInfo']['totalOrderStatus'] eq 'F11'" />订单关闭
-                    <elseif condition="$order['totalOrderInfo']['totalOrderStatus'] eq 'F12'" />订单关闭
-                    <elseif condition="$order['totalOrderInfo']['totalOrderStatus'] eq 'F13'"/>待接单
-                    <else/>
+                <div class="ordernot">订单编号 : {$order.orderTicketRecord.orderNo}</div>
+                <div class="ordernot">订单状态 : <span style="color:#029BE2;font-weight: bold;">	<if condition="$order['orderTicketRecord']['orderStatus'] eq 's1'">已下单待支付
+                    <elseif condition="$order['orderTicketRecord']['orderStatus'] eq 's2'"/>已下单已支付
+                    <elseif condition="$order['orderTicketRecord']['orderStatus'] eq 's3'"/>申请退款
+                    <elseif condition="$order['orderTicketRecord']['orderStatus'] eq 's4'"/>已退款<elseif condition="$order['orderTicketRecord']['orderStatus'] eq 's5'"/>订单未付款超时关闭<elseif condition="$order['orderTicketRecord']['orderStatus'] eq 's6'"/>取消订单关闭
+                                    <elseif condition="$order['orderTicketRecord']['orderStatus'] eq 's7'"/>已消费
                     </if></span>
                 </div>
                 <div class="ordernot">订单类型 : 服务订单</div>
@@ -43,113 +38,69 @@
                         <th>状态</th>
                     </tr>
 
-                    <volist name="shop" id="vo">
                         <tr>
-                            <td width="50%" style="padding-top: 15px;">
-                                <img src="{$vo.servicePicPath}" alt="" style="width:120px;float:left;margin-right: 15px;">
+                            <td width="25%" style="padding-top: 15px;">
+                                <img src="{$order['orderTicketRecord']['realPicUrl']}" alt="" style="width:120px;float:left;margin-left: 75px;">
                             </td>
-                            <td style="padding-top: 15px;">{$vo.goodsPrice}{$vo.serviceUnit}</td>
+                            <td style="padding-top: 15px;">222{$order['orderTicketRecord']['serviceName']}</td>
+                            <td style="padding-top: 15px;">{$order['orderTicketRecord']['sumFee']}</td>
+                            <td style="padding-top: 15px;">{$order['orderTicketRecord']['sumCount']}</td>
+                            <td style="padding-top: 15px;">{$price}</td>
                             <td style="padding-top: 15px;">
-                                {$vo.serviceNum}
+                                <volist name="ticket" id="vo">
+                                {$vo['ticketNo']}<span style="color:#029BE2;font-weight: bold;">	<if condition="$vo['ticketStatus'] eq 't0'">待付款
+                    <elseif condition="$vo['ticketStatus'] eq 't1'"/>待消费
+                    <elseif condition="$vo['ticketStatus'] eq 't2'"/>已消费
+                                    <elseif condition="$vo['ticketStatus'] eq 't3'"/>申请退款中
+                                    <elseif condition="$vo['ticketStatus'] eq 't5'"/>已过期
+                    <elseif condition="$vo['ticketStatus'] eq 't4'"/>已退款
+                    </if></span><br/>
+                                </volist>
                             </td>
+                            <td style="padding-top: 15px;"><if condition="$order['orderTicketRecord']['isLimit'] eq '0'">不限制</if><if condition="$order['orderTicketRecord']['isLimit'] eq '1'">限制</if></td>
                             <td style="padding-top: 15px;">
-                                <if condition="$vo.orderStatus eq '0'">待支付
-                                    <elseif condition="$vo.orderStatus eq '1'"/>待接单
-                                    <elseif condition="$vo.orderStatus eq '2'"/>已接单
-                                    <elseif condition="$vo.orderStatus eq '3'"/>已退款
-                                    <elseif condition="$vo.orderStatus eq '4'"/>服务已完成
-                                    <elseif condition="$vo.orderStatus eq '5'"/>逸会员申请退款
-                                    <elseif condition="$vo.orderStatus eq '6'" />已退款
-                                    <elseif condition="$vo.orderStatus eq '8'" />逸专员拒绝退款
-                                    <elseif condition="$vo.orderStatus eq '10'" />逸会员申请逸管家介入
-                                    <elseif condition="$vo.orderStatus eq '11'" />订单关闭
-                                    <elseif condition="$vo.orderStatus eq '12'" />已退款
-                                    <elseif condition="$vo.orderStatus eq '13'" />待上传支付凭证
-                                    <else/>
+                                <if condition="$order['orderTicketRecord']['orderStatus'] eq 's1'">已下单待支付
+                                    <elseif condition="$order['orderTicketRecord']['orderStatus'] eq 's2'"/>已下单已支付
+                                    <elseif condition="$order['orderTicketRecord']['orderStatus'] eq 's3'"/>申请退款
+                                    <elseif condition="$order['orderTicketRecord']['orderStatus'] eq 's4'"/>已退款<elseif condition="$order['orderTicketRecord']['orderStatus'] eq 's5'"/>订单未付款超时关闭<elseif condition="$order['orderTicketRecord']['orderStatus'] eq 's6'"/>取消订单关闭
+                                    <elseif condition="$order['orderTicketRecord']['orderStatus'] eq 's7'"/>已消费
                                 </if>
                             </td>
+                        </tr>
 
-                            <td>
-                                <switch name="Think.session.position_id">
-                                    <case value="14|15"></case>
-                                    <default/>
-                                    <if condition="$Think.session.user_id neq $vo['sellerId']">
-                                        <else/>
-                                        <if condition="($vo[orderStatus] eq '10') ">
-                                            <div class="btn btn-primary sonorder" orderNo="{$vo.orderNo}" status="{$vo.orderStatus}" orderChangeDatetime="{$vo.orderChangeDatetime}" sid="{$vo.sid}" childOrderNo="{$vo.childOrderNo}">撤销退款申请</div>
-                                            <elseif condition="$vo[orderStatus] eq '5'"/>
-                                            <div class="btn btn-primary sonorder" orderNo="{$vo.orderNo}" status="{$vo.orderStatus}" type='10' orderChangeDatetime="{$vo.orderChangeDatetime}" sid="{$vo.sid}" childOrderNo="{$vo.childOrderNo}">同意退款</div>
-                                            <div class="btn btn-primary sonorder" orderNo="{$vo.orderNo}" status="{$vo.orderStatus}" type='11' orderChangeDatetime="{$vo.orderChangeDatetime}" sid="{$vo.sid}" childOrderNo="{$vo.childOrderNo}">拒绝退款</div>
-                                            <else />
-                                        </if>
-                                    </if>
-            </div>
-            </switch>
-            </td>
-            <td></td>
-            <td></td>
-            <td></td>
-            </tr>
-            </volist>
-            </table>
+                </table>
         </div>
         <div class="tmoney">
             <div class="tmoney2">商品总价:￥
-                <?php $sum = 0;
-                foreach ($shop as $val){
-                    $sum += ($val['payPrice']);
-                }
-                echo ($sum);?>
+                <span>{$price}
                 </span></div>
-            <div class="tmoney2">配送费:￥{$order.totalOrderInfo.freight}</div>
-            <div class="tmoney2">订单总价:<span style="color:#029BE2;font-weight: bold;">￥
-                <?php $sum = 0;
-                foreach ($shop as $val){
-                    $sum += ($val['payPrice']);
-                };
-                echo ($sum+$order['totalOrderInfo']['freight']);?></span></div>
+            <div class="tmoney2">配送费:￥{$order.orderTicketRecord.unitFee}</div>
+            <div class="tmoney2">订单总价:{$price}<span style="color:#029BE2;font-weight: bold;">￥</span></div>
         </div><div style="clear:both;"></div>
         <div style="clear:both;"></div>
         <div class="orderinfo">订单信息</div>
         <div>
-            <div class="message">收货人姓名: <span style="margin-left: 65px;">{$order.totalOrderInfo.receiptUserName}</span></div>
-            <div class="message">收货人手机号:<span style="margin-left: 53px;">{$order.totalOrderInfo.receiptTelephone}</span></div>
-            <div class="message">收货人地址:<span style="margin-left: 69px;">{$order.totalOrderInfo.receiptPlace}</span></div>
-            <div class="message">买家留言:<span style="margin-left: 86px;">{$order.totalOrderInfo.message}</span></div>
-            <div class="message">下单时间:<span style="margin-left: 85px;">{$order.totalOrderInfo.dealDatetime}</span></div>
+            <div class="message">收货人姓名: <span style="margin-left: 65px;">{$order['orderTicketRecord']['buyerName']}</span></div>
+            <div class="message">收货人手机号:<span style="margin-left: 53px;">{$order['orderTicketRecord']['buyerPhone']}</span></div>
+            <div class="message">收货人地址:<span style="margin-left: 69px;">{$order['sellerInfo']['userAddressDetail']}</span></div>
+            <div class="message">下单时间:<span style="margin-left: 85px;">{$order['orderTicketRecord']['payOverTime']}</span></div>
         </div>
         <div class="orderinfo">付款信息</div>
         <div>
             <div class="message">支付方式:&nbsp;&nbsp;
-                <if condition="$_GET[payMent] eq '0'">支付宝
-                    <elseif condition="$_GET[payMent] eq '1'"/>微信
-                    <elseif condition="$_GET[payMent] eq '2'"/>余额支付
-                    <elseif condition="$_GET[payMent] eq '3'"/>银行卡
-                    <elseif condition="$_GET[payMent] eq '4'"/>线下支付
+                <if condition="$order['orderTicketRecord']['payType'] eq '0'">支付宝
+                    <elseif condition="$order['orderTicketRecord']['payType'] eq '1'"/>微信
+                    <elseif condition="$order['orderTicketRecord']['payType'] eq '2'"/>余额支付
+                    <elseif condition="$order['orderTicketRecord']['payType'] eq '3'"/>银行卡
+                    <elseif condition="$order['orderTicketRecord']['payType'] eq '4'"/>线下支付
                     <else/>
+                    未支付
                 </if>
             </div>
-            <div class="message">付款时间:&nbsp;&nbsp;<?php echo($_GET['tradeFinishTime'])?></div>
-            <div class="message">付款账号:&nbsp;&nbsp;{$order.totalOrderInfo.buyerName}</div>
+            <div class="message">付款时间:&nbsp;&nbsp;{$order['orderTicketRecord']['payTime']}</div>
+            <div class="message">付款账号:&nbsp;&nbsp;{$order['orderTicketRecord']['buyerName']}</div>
         </div>
-        <switch name="Think.session.position_id">
-            <case value="14|15|16"></case>
-            <default/>
-            <div class="orderinfo">处理意见</div>
-            <div class="btn-button">
-                <if condition="($shop[0][totalOrderStatus] eq 'F0') OR ($shop[0][totalOrderStatus] eq 'F13')">
-                    <div class="btn btn-primary operation" orderNo="{$order.childOrderList.0.orderNo}" status="{$shop.0.totalOrderStatus}" orderChangeDatetime="{$shop.0.orderChangeDatetime}">订单取消</div>
-                    <div class="btn btn-primary shut" url="{:U('Order/service')}">关闭</div>
-                    <elseif condition="$shop[0][totalOrderStatus] eq 'F1'" />
-                    <div class="btn btn-primary operation" orderNo="{$order.childOrderList.0.orderNo}" status="{$shop.0.totalOrderStatus}" type='1' orderChangeDatetime="{$shop.0.orderChangeDatetime}">确认接单</div>
-                    <div class="btn btn-primary operation" orderNo="{$order.childOrderList.0.orderNo}" status="{$shop.0.totalOrderStatus}" type='2' orderChangeDatetime="{$shop.0.orderChangeDatetime}">拒绝接单</div>
-                    <div class="btn btn-primary shut" url="{:U('Order/service')}">关闭</div>
-                    <elseif condition = "($shop[0][totalOrderStatus] eq 'F3') OR ($shop[0][totalOrderStatus] eq 'F4')  OR ($shop[0][totalOrderStatus] eq 'F5') OR ($shop[0][totalOrderStatus] eq 'F11') OR ($shop[0][totalOrderStatus] eq 'F12') OR ($shop[0][totalOrderStatus] eq 'F2')" />
-                    <div class="btn btn-primary shut" url="{:U('Order/service')}">关闭</div>
-                    <else/>
-                </if>
-            </div>
-        </switch>
+            <div class="btn btn-primary shut" url="{:U('Order/managerservice')}" style="margin-left:500px">关闭</div>
     </div>
 </div>
 </div>
