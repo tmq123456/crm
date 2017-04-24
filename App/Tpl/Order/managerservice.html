@@ -60,7 +60,7 @@
                     <li class="pull-left">
                         <form class="form-inline" id="searchForm" action="{:U('Order/managerservice')}" method="get">
                             <ul class="nav pull-left">
-                                <li style="margin-top:-115px"><input type="radio" name="buyType" value="1" <if condition="!isset($_GET['buyType'])||$_GET['buyType']==1">checked</if>>买家
+                                <li style="margin-top:-45px"><input type="radio" name="buyType" value="1" <if condition="!isset($_GET['buyType'])||$_GET['buyType']==1">checked</if>>买家
                                     <input type="radio" name="buyType" value="2" <if condition="isset($_GET['buyType'])&&$_GET['buyType']==2">checked</if>>卖家</li>
                                 <li id="conditionContent" class="pull-left"> &nbsp;&nbsp;支付方式:
                                     <select id="condition" style="width:auto" name="payMent">
